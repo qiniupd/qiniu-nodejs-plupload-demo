@@ -33,21 +33,21 @@
         };
     };
 
-    Local.IE = (function() {
-        var v = 4,
-            div = document.createElement('div'),
-            all = div.getElementsByTagName('i');
-        while (
-            div.innerHTML = '<!--[if gt IE ' + v + ']><i></i><![endif]-->',
-            all[0]
-        ) {
-            v++;
-        }
-        return v > 4 ? v : false;
-    }());
+    // Local.IE = (function() {
+    //     var v = 4,
+    //         div = document.createElement('div'),
+    //         all = div.getElementsByTagName('i');
+    //     while (
+    //         div.innerHTML = '<!--[if gt IE ' + v + ']><i></i><![endif]-->',
+    //         all[0]
+    //     ) {
+    //         v++;
+    //     }
+    //     return v > 4 ? v : false;
+    // }());
 
-    Local.uploaderRuntime = Local.IE && Local.IE < 10 ? 'flash' : 'html5,flash';
-    console.log(Local.uploaderRuntime);
+    // Local.uploaderRuntime = Local.IE && Local.IE < 10 ? 'flash' : 'html5,flash';
+    // console.log(Local.uploaderRuntime);
 
     var uploader = new plupload.Uploader({
         runtimes: 'html5,flash',
@@ -58,17 +58,32 @@
         flash_swf_url: 'js/plupload/Moxie.swf',
         silverlight_xap_url: 'js/plupload/Moxie.xap',
         multipart_params: {
-            "token": 'MX-bE11GUuO8WUqfv1kt69hNiJ2BeI3xeKYnZqMl:nyM055VliIdALnCy9vHhHsxnbyk=:eyJzY29wZSI6InFpbml1LXBsdXBsb2FkLWV4YW1wbGUiLCJkZWFkbGluZSI6MzkwOTYyNTkzN30='
+            "token": ''
         }
     });
 
     uploader.bind('Init', function(up, params) {
         //显示当前上传方式，调试用
         console.log('Current runtime:  ' + params.runtime);
+        console.log(up.settings.multipart_params.token);
+        $.ajax({
+            url: '/token',
+            type: 'GET',
+            success: function(data) {
+                if (data && data.uptoken) {
+                    console.log(data.uptoken);
+                    up.settings.multipart_params.token = data.uptoken;
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
     });
     uploader.init();
 
     uploader.bind('FilesAdded', function(up, files) {
+
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setStatus("等待...");
@@ -171,3 +186,8 @@
         uploader.destroy();
         model.manualCancel(true);
     };
+
+
+    $('#pickfiles').on('click', function() {
+
+    });
