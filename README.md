@@ -21,18 +21,19 @@ a upload demo using qiniu-nodejs-sdk and plupload
 1. 获取源代码：
     `git clone https://github.com/SunLn/qiniu-nodejs-plupload-demo.git`
 
-2. 
-
-
-2. 编辑 `server.js` 文件
+2. 安装express 、七牛Node.js SDK 6.0.0
+```{javascript}
+npm install express
+npm install qiniu
+```
+3. 编辑 `server.js` 文件
 ```{javascript}
 qiniu.conf.ACCESS_KEY = '<Your Access Key>'
 qiniu.conf.SECRET_KEY = '<Your Secret Key>'
-
 var uptoken = new qiniu.rs.PutPolicy('<Your Buckete Name>');
 ```
 
-3. 用任何的服务端语言启动网站，选择上传的文件后即可自动向对应的七牛空间上传文件。
+4. make install
 
 ## 说明
 
