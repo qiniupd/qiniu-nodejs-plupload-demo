@@ -6,23 +6,31 @@ a upload demo using qiniu-nodejs-sdk and plupload
 ======================
 
 
-一个基于 [七牛云存储](http://www.qiniu.com/)、 [Node.js SDK] (http://developer.qiniu.com/docs/v6/sdk/nodejs-sdk.html)及[Plupload](http://www.plupload.com/) 开发的上传Demo。
+一个基于 [七牛云存储](http://www.qiniu.com/)、 [七牛Node.js SDK] (http://developer.qiniu.com/docs/v6/sdk/nodejs-sdk.html)及[Plupload](http://www.plupload.com/) 开发的上传Demo。
 示例网站：[七牛Plupload上传Demo]( )
 
 ##依赖
 
 1、Plupload 2.0.0 
-
 2、jQuery 1.9.1
-
 3、Node.js SDK 6.0.0
+4、express
 
 ## 安装和运行程序
 
 1. 获取源代码：
     `git clone https://github.com/SunLn/qiniu-nodejs-plupload-demo.git`
 
-2. 编辑 `qiniu.js` 文件，修改其中字段 `multipart_params.token` 为自己的uploadToken值(Line 61)。uploadToken可以通过访问[http://qtestbucket.qiniudn.com/demo/index.html] 获取生成。
+2. 
+
+
+2. 编辑 `server.js` 文件
+```{javascript}
+qiniu.conf.ACCESS_KEY = '<Your Access Key>'
+qiniu.conf.SECRET_KEY = '<Your Secret Key>'
+
+var uptoken = new qiniu.rs.PutPolicy('<Your Buckete Name>');
+```
 
 3. 用任何的服务端语言启动网站，选择上传的文件后即可自动向对应的七牛空间上传文件。
 
