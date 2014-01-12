@@ -38,6 +38,7 @@
         browse_button: 'pickfiles',
         container: 'container',
         max_file_size: '40mb',
+        chunk_size: '5mb',
         url: 'http://up.qiniu.com',
         flash_swf_url: 'js/plupload/Moxie.swf',
         silverlight_xap_url: 'js/plupload/Moxie.xap',
@@ -56,7 +57,6 @@
             success: function(data) {
                 console.log(data);
                 if (data && data.uptoken) {
-                    console.log(data.uptoken);
                     up.settings.multipart_params.token = data.uptoken;
                 }
             },
@@ -68,7 +68,6 @@
     uploader.init();
 
     uploader.bind('FilesAdded', function(up, files) {
-        console.log(up.settings.multipart_params.token);
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setStatus("等待...");
@@ -156,11 +155,13 @@
         up.refresh(); // Reposition Flash/Silverlight
     });
 
-    uploader.bind('FileUploaded', function(up, file) {
+    uploader.bind('FileUploaded', function(up, file, info) {
         var progress = new FileProgress(file, 'fsUploadProgress');
-        progress.setComplete();
         progress.setStatus("上传完成");
+        progress.setComplete(info);
         progress.toggleCancel(false);
+    },{
+
     });
 
     uploader.bind('UploadComplete', function(up, files) {
