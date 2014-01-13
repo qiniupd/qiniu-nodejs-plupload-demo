@@ -161,8 +161,9 @@ FileProgress.prototype.setCancelled = function(manual) {
     if (!manual) {
         progressContainer += ' red';
     }
-    this.fileProgressWrapper.className = progressContainer;
-    this.fileProgressWrapper.childNodes[2].className = "progressBarError";
+    this.fileProgressWrapper.className = progressContainer; << << << < HEAD
+    this.fileProgressWrapper.childNodes[2].className = "progressBarError"; === === =
+        this.fileProgressWrapper.childNodes[3].className = "progressBarError"; >>> >>> > 1a77398732629bec032dfd135f68061c70e7beb6
     this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "0%";
 };
 FileProgress.prototype.setStatus = function(status, isUploading) {
