@@ -50,7 +50,6 @@
     uploader.bind('Init', function(up, params) {
         //显示当前上传方式，调试用
         console.log('Current runtime:  ' + params.runtime);
-        console.log(up.settings.multipart_params.token);
         $.ajax({
             url: '/token',
             type: 'GET',
@@ -68,6 +67,7 @@
     uploader.init();
 
     uploader.bind('FilesAdded', function(up, files) {
+        $('#container').show();
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setStatus("等待...");
@@ -160,7 +160,7 @@
         progress.setStatus("上传完成");
         progress.setComplete(info);
         progress.toggleCancel(false);
-    },{
+    }, {
 
     });
 

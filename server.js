@@ -22,7 +22,7 @@ app.get('/', function(req, res) {
 qiniu.conf.ACCESS_KEY = '0MLvWPnyya1WtPnXFy9KLyGHyFPNdZceomLVk0c9';
 qiniu.conf.SECRET_KEY = 'o5itRgrXxoD6XQ5wDWKQ7h--eWvWyQVKcsIURuEV';
 
-var uptoken = new qiniu.rs.PutPolicy('nodejs-sdk-plupload');
+var uptoken = new qiniu.rs.PutPolicy('qiniu-plupload');
 
 
 app.listen(3000);
