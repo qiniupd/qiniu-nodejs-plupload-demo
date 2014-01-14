@@ -87,6 +87,7 @@ function FileProgress(file, targetID) {
 FileProgress.prototype.setTimer = function(timer) {
     this.fileProgressWrapper.FP_TIMER = timer;
 };
+
 FileProgress.prototype.getTimer = function(timer) {
     return this.fileProgressWrapper.FP_TIMER || null;
 };
