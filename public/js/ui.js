@@ -125,7 +125,7 @@ FileProgress.prototype.setProgress = function(percentage, speed) {
     this.appear();
 };
 FileProgress.prototype.setComplete = function(info) {
-    console.log(info);
+    //console.log(info);
     this.fileProgressWrapper.childNodes[2].childNodes[0].style.display = 'none';
     this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].setAttribute('aria-valuenow', parseInt(100, 10));
     this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "100%";
@@ -138,9 +138,9 @@ FileProgress.prototype.setComplete = function(info) {
 };
 FileProgress.prototype.setError = function() {
     // this.fileProgressWrapper.className = "progressContainer red";
-    this.fileProgressWrapper.childNodes[2].className =  this.fileProgressWrapper.childNodes[2].className + '  text-warning';
-        this.fileProgressWrapper.childNodes[2].childNodes[0].style.display='none';
-        this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "0%";
+    this.fileProgressWrapper.childNodes[2].className = this.fileProgressWrapper.childNodes[2].className + '  text-warning';
+    this.fileProgressWrapper.childNodes[2].childNodes[0].style.display = 'none';
+    this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "0%";
 };
 FileProgress.prototype.setCancelled = function(manual) {
     // var progressContainer = 'progressContainer';
@@ -153,7 +153,7 @@ FileProgress.prototype.setCancelled = function(manual) {
 FileProgress.prototype.setStatus = function(status, isUploading) {
     if (!isUploading) {
 
-        this.fileProgressWrapper.childNodes[2].childNodes[2].innerHTML =status;
+        this.fileProgressWrapper.childNodes[2].childNodes[2].innerHTML = status;
     }
 };
 

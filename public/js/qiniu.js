@@ -33,19 +33,22 @@
         };
     };
 
+    var token = '';
     var uploader = new plupload.Uploader({
         runtimes: 'html5,flash',
         browse_button: 'pickfiles',
         container: 'container',
         max_file_size: '100mb',
-        // chunk_size: '5mb',
+        chunk_size: '4mb',
         url: 'http://up.qiniu.com',
         flash_swf_url: 'js/plupload/Moxie.swf',
         silverlight_xap_url: 'js/plupload/Moxie.xap',
-        max_retries: 3,
+        // max_retries: 1,
         multipart_params: {
-            "token": ''
-        }
+            "token": '',
+            "UpToken": ''
+        },
+        required_features: 'chunks'
     });
 
     uploader.bind('Init', function(up, params) {
@@ -56,7 +59,9 @@
             type: 'GET',
             success: function(data) {
                 if (data && data.uptoken) {
+                    token = data.uptoken;
                     up.settings.multipart_params.token = data.uptoken;
+                    //up.settings.multipart_params.UpToken = data.uptoken;
                 }
             },
             error: function(error) {
@@ -67,7 +72,7 @@
     uploader.init();
 
     uploader.bind('FilesAdded', function(up, files) {
-        $('#container').show(); 
+        $('#container').show();
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setStatus("等待...");
@@ -80,6 +85,24 @@
     uploader.bind('BeforeUpload', function(up, file) {
         var progress = new FileProgress(file, 'fsUploadProgress');
         up.settings.multipart_params.key = file.name;
+        console.log(file);
+        if (file.size > 4194304) {
+            up.settings.url = 'http://up.qiniu.com';
+            up.settings.url = up.settings.url + '/mkblk/4194304';
+            up.settings.headers = {
+                'Authorization': 'UpToken ' + token,
+                'Content-Length': '1048576'
+                // 'Content-Type': 'application/octet-stream'
+            };
+            up.settings.multipart = false;
+            up.settings.multipart_params = {};
+            //up.settings.multipart_params.token = '';
+        } else {
+            up.settings.multipart = true;
+            up.settings.url = 'http://up.qiniu.com';
+            up.settings.multipart_params.token = token;
+            up.settings.headers = {};
+        }
     });
 
     uploader.bind('UploadProgress', function(up, file) {
@@ -87,17 +110,53 @@
         progress.setProgress(file.percent + "%", up.total.bytesPerSec);
         //progress.setStatus("上传中...");
     });
-
+    var ctx = '';
+    var pos = 0;
     uploader.bind('ChunkUploaded', function(up, file, info) {
-         // do some chunk related stuff
-         console.log(up,file,info);
+        // do some chunk related stuff
+        // console.log(info);
+        // console.log(up);
+        var res = $.parseJSON(info.response);
+        var host = res.host;
+        console.log(info);
+        if (file.size > res.offset) {
+            // while (file.size > res.offset) {
+            // console.log(res.offset);
+            ctx = ctx ? ctx + ',' + res.ctx : res.ctx;
+            // var offset = $.parseJSON(info.offset);
+            // console.log(offset);
+
+            // //up.settings.headers.host = res.host;
+            // up.settings.headers = {
+            //     'Authorization': 'UpToken ' + token,
+            //     'Content-Length': offset,
+            //     'Host': res.host,
+            //     'Content-Type': 'application/octet-stream'
+            // };
+            // pos++;
+            // up.settings.url = host + '/bput/' + ctx + '/' + offset;
+
+            console.log(up.settings.url);
+            // }
+        } else if (file.size === res.offset) {
+            up.settings.headers = {
+                'Authorization': 'UpToken ' + token,
+                'Content-Length': offset,
+                'Host': res.host,
+                'Content-Type': 'text/plain'
+            };
+            up.settings.url = host + '/mkfile/' + file.size + '/key/' + file.name;
+            console.log('success');
+        } else {
+            up.settings.url = 'http://up.qiniu.com';
+        }
     });
 
     uploader.bind('Error', function(up, err) {
         var file = err.file;
         var errTip = '';
-        $('#container').show(); 
-        console.log(file);
+        $('#container').show();
+        // console.log(file);
         if (file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setError();
