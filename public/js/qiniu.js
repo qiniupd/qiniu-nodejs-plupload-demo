@@ -166,16 +166,15 @@
 
 
     var uploader = new plupload.Uploader({
-        runtimes: 'html5,flash',
+        runtimes: 'html5,flash,silverlight,html4',
         browse_button: 'pickfiles',
         container: 'container',
         max_file_size: '100mb',
         chunk_size: '4mb',
         url: 'http://up.qiniu.com',
-        flash_swf_url: 'js/plupload/Moxie.swf',
-        silverlight_xap_url: 'js/plupload/Moxie.xap',
+        flash_swf_url: 'http://rawgithub.com/moxiecode/moxie/master/bin/flash/Moxie.cdn.swf',
+        silverlight_xap_url:'http://rawgithub.com/moxiecode/moxie/master/bin/silverlight/Moxie.cdn.xap'
         // max_retries: 1,
-        required_features: 'chunks'
     });
 
     var token = '';
@@ -202,6 +201,7 @@
 
     uploader.bind('FilesAdded', function(up, files) {
         $('#container').show();
+        console.log(up.runtime)
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setStatus("等待...");
@@ -213,44 +213,26 @@
 
     uploader.bind('BeforeUpload', function(up, file) {
         var progress = new FileProgress(file, 'fsUploadProgress');
-        ctx = '';
 
-        var blockSize = file.size > BLOCK_SIZE ? BLOCK_SIZE : file.size
-        up.settings.url = 'http://up.qiniu.com/mkblk/' + blockSize;
-        up.settings.headers = {
-            'Authorization': 'UpToken ' + token,
-        };
-        up.settings.multipart = false;
-        up.settings.multipart_params = {};
+            ctx = '';
+
+            var blockSize = file.size > BLOCK_SIZE ? BLOCK_SIZE : file.size
+            up.settings.url = 'http://up.qiniu.com/mkblk/' + blockSize;
+            up.settings.headers = {
+                'Authorization': 'UpToken ' + token,
+            };
+            up.settings.multipart = false;
+            up.settings.multipart_params = {};
     });
 
     uploader.bind('UploadProgress', function(up, file) {
         var progress = new FileProgress(file, 'fsUploadProgress');
         progress.setProgress(file.percent + "%", up.total.bytesPerSec);
-        //progress.setStatus("上传中...");
     });
-
-
-    var makeFile = function(file) {
-        url = 'http://up.qiniu.com/mkfile/' + file.size + '/key/' + Local.URLSafeBase64Encode(file.name);
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=UTF-8',
-                'Authorization': 'UpToken ' + token
-            },
-            data: ctx,
-            success: function(data) {
-                var progress = new FileProgress(file, 'fsUploadProgress');
-                progress.setComplete(data);
-            }
-        });
-    }
 
     uploader.bind('ChunkUploaded', function(up, file, info) {
         var res = $.parseJSON(info.response);
+        console.log(info);
 
         ctx = ctx ? ctx + ',' + res.ctx : res.ctx;
         var leftSize = info.total - info.offset;
@@ -331,15 +313,29 @@
 
     uploader.bind('FileUploaded', function(up, file, info) {
         console.log("-----------sssssss", info);
-        makeFile(file)
-        // var progress = new FileProgress(file, 'fsUploadProgress');
-        // progress.setComplete(info);
-        // progress.setStatus("上传完成");
-        // progress.toggleCancel(false);
-    });
-    uploader.bind('UploadComplete', function(up, files) {
+         var res = $.parseJSON(info.response);
+        ctx = ctx ? ctx  : res.ctx;
+               
+        var url = 'http://up.qiniu.com/mkfile/' + file.size + '/key/' + Local.URLSafeBase64Encode(file.name);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8',
+                'Authorization': 'UpToken ' + token
+            },
+            data: ctx,
+            success: function(data) {
+                var progress = new FileProgress(file, 'fsUploadProgress');
+                progress.setComplete(data);
+                // progress.setStatus("上传完成");
+                // progress.toggleCancel(false);
+            }
+        });
 
     });
+
 
     var cancelUpload = function() {
         uploader.destroy();
