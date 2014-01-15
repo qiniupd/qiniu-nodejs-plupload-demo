@@ -130,7 +130,8 @@ FileProgress.prototype.setComplete = function(info) {
     this.fileProgressWrapper.childNodes[2].childNodes[0].style.display = 'none';
     this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].setAttribute('aria-valuenow', parseInt(100, 10));
     this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "100%";
-    var res = $.parseJSON(info.response);
+    // var res = $.parseJSON(info.response);
+    var res = info;
     var url = 'http://qiniu-plupload.qiniudn.com/' + res.key;
     var str = "<div><strong>Link:</strong><a href=" + url + " target='_blank' > " + url + "</a></div>" +
         "<div><strong>Hash:</strong>" + res.hash + "<div>";
@@ -148,7 +149,7 @@ FileProgress.prototype.setCancelled = function(manual) {
     // if (!manual) {
     //     progressContainer += ' red';
     // }
-    // this.fileProgressWrapper.className = progressContainer; 
+    // this.fileProgressWrapper.className = progressContainer;
     // this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "0%";
 };
 FileProgress.prototype.setStatus = function(status, isUploading) {
