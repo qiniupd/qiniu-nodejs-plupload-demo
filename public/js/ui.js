@@ -132,8 +132,9 @@ FileProgress.prototype.setComplete = function(info) {
     this.fileProgressWrapper.childNodes[2].childNodes[0].childNodes[0].style.width = "100%";
     // var res = $.parseJSON(info.response);
     var res = info;
-    var url = 'http://qiniu-plupload.qiniudn.com/' + res.key;
-    var str = "<div><strong>Link:</strong><a href=" + url + " target='_blank' > " + url + "</a></div>" +
+    var url = 'http://qiniu-plupload.qiniudn.com/' + encodeURI(res.key);
+    var link = 'http://qiniu-plupload.qiniudn.com/' + res.key;
+    var str = "<div><strong>Link:</strong><a href=" + url + " target='_blank' > " + link + "</a></div>" +
         "<div><strong>Hash:</strong>" + res.hash + "<div>";
 
     this.fileProgressWrapper.childNodes[2].innerHTML = str;
