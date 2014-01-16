@@ -163,17 +163,17 @@
             }
         };
     };
-
-
-    var uploader = new plupload.Uploader({
+    var uploader
+    //$(function() {
+    uploader = new plupload.Uploader({
         runtimes: 'html5,flash,silverlight,html4',
         browse_button: 'pickfiles',
         container: 'container',
         max_file_size: '100mb',
         chunk_size: '4mb',
         url: 'http://up.qiniu.com',
-        flash_swf_url: 'http://rawgithub.com/moxiecode/moxie/master/bin/flash/Moxie.cdn.swf',
-        silverlight_xap_url:'http://rawgithub.com/moxiecode/moxie/master/bin/silverlight/Moxie.cdn.xap'
+        flash_swf_url: 'js/plupload/Moxie.swf',
+        silverlight_xap_url: 'js/plupload/Moxie.xap'
         // max_retries: 1,
     });
 
@@ -187,6 +187,11 @@
         $.ajax({
             url: '/token',
             type: 'GET',
+            cache: false,
+            // headers: {
+            //     'Cache-Control': 'no-cache',
+            //     'Pragma': 'no-cache'
+            // },
             success: function(data) {
                 if (data && data.uptoken) {
                     token = data.uptoken;
@@ -213,16 +218,22 @@
 
     uploader.bind('BeforeUpload', function(up, file) {
         var progress = new FileProgress(file, 'fsUploadProgress');
-
+        if (uploader.runtime === 'html5') {
             ctx = '';
-
             var blockSize = file.size > BLOCK_SIZE ? BLOCK_SIZE : file.size
             up.settings.url = 'http://up.qiniu.com/mkblk/' + blockSize;
+            up.settings.multipart = false;
             up.settings.headers = {
                 'Authorization': 'UpToken ' + token,
             };
-            up.settings.multipart = false;
             up.settings.multipart_params = {};
+        } else {
+            up.settings.url = 'http://up.qiniu.com/';
+            //up.settings.headers = {};
+            up.settings.multipart = true;
+            up.settings.multipart_params.token = token;
+            up.settings.multipart_params.key = file.name;
+        }
     });
 
     uploader.bind('UploadProgress', function(up, file) {
@@ -245,6 +256,7 @@
     uploader.bind('Error', function(up, err) {
         var file = err.file;
         var errTip = '';
+        console.log(err);
         $('#container').show();
         if (file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
@@ -313,31 +325,32 @@
 
     uploader.bind('FileUploaded', function(up, file, info) {
         console.log("-----------sssssss", info);
-         var res = $.parseJSON(info.response);
-        ctx = ctx ? ctx  : res.ctx;
-               
-        var url = 'http://up.qiniu.com/mkfile/' + file.size + '/key/' + Local.URLSafeBase64Encode(file.name);
-
-        $.ajax({
-            url: url,
-            type: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=UTF-8',
-                'Authorization': 'UpToken ' + token
-            },
-            data: ctx,
-            success: function(data) {
-                var progress = new FileProgress(file, 'fsUploadProgress');
-                progress.setComplete(data);
-                // progress.setStatus("上传完成");
-                // progress.toggleCancel(false);
-            }
-        });
-
+        var res = $.parseJSON(info.response);
+        ctx = ctx ? ctx : res.ctx;
+        if (ctx) {
+            var url = 'http://up.qiniu.com/mkfile/' + file.size + '/key/' + Local.URLSafeBase64Encode(file.name);
+            $.ajax({
+                url: url,
+                type: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain;charset=UTF-8',
+                    'Authorization': 'UpToken ' + token
+                },
+                data: ctx,
+                success: function(data) {
+                    var progress = new FileProgress(file, 'fsUploadProgress');
+                    progress.setComplete(data);
+                    // progress.setStatus("上传完成");
+                    // progress.toggleCancel(false);
+                }
+            });
+        } else {
+            progress.setComplete(info);
+        }
     });
 
+    //});
 
     var cancelUpload = function() {
         uploader.destroy();
-        model.manualCancel(true);
     };
