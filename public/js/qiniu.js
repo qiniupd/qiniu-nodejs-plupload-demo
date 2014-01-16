@@ -170,11 +170,14 @@
         browse_button: 'pickfiles',
         container: 'container',
         max_file_size: '100mb',
-        chunk_size: '4mb',
         url: 'http://up.qiniu.com',
         flash_swf_url: 'js/plupload/Moxie.swf',
-        silverlight_xap_url: 'js/plupload/Moxie.xap'
+        silverlight_xap_url: 'js/plupload/Moxie.xap',
         // max_retries: 1,
+        //required_features:undefined,
+          multipart_params : {
+            token : ''
+          }
     });
 
     var token = '';
@@ -205,7 +208,7 @@
     uploader.init();
 
     uploader.bind('FilesAdded', function(up, files) {
-        $('#container').show();
+        $('table').show();
         console.log(up.runtime)
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
@@ -223,14 +226,15 @@
             var blockSize = file.size > BLOCK_SIZE ? BLOCK_SIZE : file.size
             up.settings.url = 'http://up.qiniu.com/mkblk/' + blockSize;
             up.settings.multipart = false;
+            up.settings.chunk_size= '4mb';
             up.settings.headers = {
                 'Authorization': 'UpToken ' + token,
             };
             up.settings.multipart_params = {};
         } else {
             up.settings.url = 'http://up.qiniu.com/';
-            //up.settings.headers = {};
             up.settings.multipart = true;
+            up.settings.chunk_size= undefined;
             up.settings.multipart_params.token = token;
             up.settings.multipart_params.key = file.name;
         }
@@ -345,7 +349,8 @@
                 }
             });
         } else {
-            progress.setComplete(info);
+            var progress = new FileProgress(file, 'fsUploadProgress');
+            progress.setComplete($.parseJSON(info.response));
         }
     });
 
