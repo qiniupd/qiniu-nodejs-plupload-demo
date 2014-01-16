@@ -6,8 +6,17 @@ app.configure(function() {
     app.use(express.static(__dirname + '/public'));
 });
 
+app.use(function(req, res, next) {
+    console.log("=====================>>>>----");
+    req.headers['if-none-match'] = 'no-match-for-this';
+    next();
+});
+
 app.get('/token', function(req, res, next) {
+    console.log("=====================>>>>token");
     var token = uptoken.token();
+    res.setHeader('Pragma', 'no-cache');
+    console.log(token);
     if (token) {
         res.json({
             uptoken: token
@@ -16,6 +25,7 @@ app.get('/token', function(req, res, next) {
 });
 
 app.get('/', function(req, res) {
+    res.setHeader('Pragma', 'no-cache');
     res.sendfile(__dirname + '/public/index.html')
 });
 
