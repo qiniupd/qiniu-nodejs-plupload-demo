@@ -169,15 +169,18 @@
         runtimes: 'html5,flash,silverlight,html4',
         browse_button: 'pickfiles',
         container: 'container',
+        drop_element: 'container',
         max_file_size: '100mb',
         url: 'http://up.qiniu.com',
         flash_swf_url: 'js/plupload/Moxie.swf',
         silverlight_xap_url: 'js/plupload/Moxie.xap',
         // max_retries: 1,
-        //required_features:undefined,
-          multipart_params : {
-            token : ''
-          }
+        //required_features: true,
+        dragdrop: true,
+        chunk_size: '4mb',
+        multipart_params: {
+            token: ''
+        }
     });
 
     var token = '';
@@ -209,6 +212,7 @@
 
     uploader.bind('FilesAdded', function(up, files) {
         $('table').show();
+        $('#success').hide();
         console.log(up.runtime)
         $.each(files, function(i, file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
@@ -224,9 +228,9 @@
         if (uploader.runtime === 'html5') {
             ctx = '';
             var blockSize = file.size > BLOCK_SIZE ? BLOCK_SIZE : file.size
+            // up.settings.chunk_size = '4mb';
             up.settings.url = 'http://up.qiniu.com/mkblk/' + blockSize;
             up.settings.multipart = false;
-            up.settings.chunk_size= '4mb';
             up.settings.headers = {
                 'Authorization': 'UpToken ' + token,
             };
@@ -234,7 +238,7 @@
         } else {
             up.settings.url = 'http://up.qiniu.com/';
             up.settings.multipart = true;
-            up.settings.chunk_size= undefined;
+            up.settings.chunk_size = undefined;
             up.settings.multipart_params.token = token;
             up.settings.multipart_params.key = file.name;
         }
@@ -261,7 +265,7 @@
         var file = err.file;
         var errTip = '';
         console.log(err);
-        $('#container').show();
+        $('table').show();
         if (file) {
             var progress = new FileProgress(file, 'fsUploadProgress');
             progress.setError();
@@ -353,9 +357,33 @@
             progress.setComplete($.parseJSON(info.response));
         }
     });
-
+    uploader.bind('UploadComplete', function() {
+        $('#success').show();
+    });
     //});
 
     var cancelUpload = function() {
         uploader.destroy();
     };
+    $(function() {
+        $('#container').on(
+            'dragenter',
+            function(e) {
+                e.preventDefault();
+                $('#container').addClass('draging');
+                e.stopPropagation();
+            }
+        ).on('drop', function(e) {
+            e.preventDefault();
+            $('#container').removeClass('draging');
+            e.stopPropagation();
+        }).on('dragleave', function(e) {
+            e.preventDefault();
+            $('#container').removeClass('draging');
+            e.stopPropagation();
+        }).on('dragover', function(e) {
+            e.preventDefault();
+            $('#container').addClass('draging');
+            e.stopPropagation();
+        });
+    });
