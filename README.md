@@ -4,14 +4,18 @@ qiniu-nodejs-plupload-demo
 a upload demo using qiniu-nodejs-sdk and plupload
 
 ======================
+本demo开发时仅为演示，更成熟的方法请参考另外一个官方推荐的[JS-SDK Repo](https://github.com/qiniupd/qiniu-js-sdk)。
+http://plupload-demo.u.qiniudn.com 也即将跳转到 https://github.com/qiniupd/qiniu-js-sdk
+
+
 
 
 一个基于 [七牛云存储](http://www.qiniu.com/)、 [七牛Node.js SDK] (http://developer.qiniu.com/docs/v6/sdk/nodejs-sdk.html)及[Plupload](http://www.plupload.com/) 开发的上传Demo。
-示例网站：[七牛Plupload上传Demo]( )
+示例网站：[七牛Plupload上传Demo](http://plupload-demo.u.qiniudn.com )
 
 ##依赖
 
-1、Plupload 2.0.0 
+1、Plupload 2.0.0
 2、jQuery 1.9.1
 3、Node.js SDK 6.0.0
 4、express
