@@ -1,9 +1,7 @@
 #qiniu-nodejs-plupload-demo
 
-本demo开发时仅为演示、学习，更成熟的方案请参考另外一个官方推荐的[JS-SDK Repo](https://github.com/qiniupd/qiniu-js-sdk)。
-[JS-SDK 示例网站](http://jssdk.demo.qiniu.io/)。
-
-一个基于 [七牛云存储](http://www.qiniu.com/)、 [七牛Node.js SDK] (http://developer.qiniu.com/docs/v6/sdk/nodejs-sdk.html)及[Plupload](http://www.plupload.com/) 开发的上传Demo。
+**本demo开发时仅为演示、学习，更成熟的方案请参考另外一个官方推荐的[JS-SDK Repo](https://github.com/qiniupd/qiniu-js-sdk)。
+[JS-SDK 示例网站](http://jssdk.demo.qiniu.io/)**
 
 ##依赖
 
